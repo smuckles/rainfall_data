@@ -1,5 +1,4 @@
-def main():    
-    
+     
 #### Importing packages:
 import sys
 import numpy as np
