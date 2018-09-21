@@ -31,3 +31,5 @@ The code assumes a csv file input with row 0 being the column headers. Any devia
 # EXTENDING THE CODE:
 
 The code currently takes a single input but could be modified to be run incrementally as new data comes in. If run in the terminal like above it could be modified to accomodate two inputs: the original full data set and the new data. The code would currently require that the new data be apended to the original set and the interpolation and integration calculations rerun. This would be time consuming, but if the new data is only coming in on the order of the same frequency ( > 24 hrs between data points) as the original data set then it is probably not an issue.
+
+Only data required would be new unix timestamp and the rainfall value (in inches per hour)
