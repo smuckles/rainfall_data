@@ -1,7 +1,7 @@
 def main():    
     
     #### Importing packages:
-    
+    import sys
     import numpy as np
     import pandas as pd
     import datetime
@@ -10,8 +10,10 @@ def main():
     from scipy import interpolate
     from scipy import integrate
     
+    
     #### import data set -- in this case as a csv file -- however, could easily be adjusted to take input from SQL db
-    df_raw = pd.read_csv('../input/accumRainfall.csv')
+    FILE = sys.argv[1]
+    df_raw = pd.read_csv(FILE)
     
     #### data preprocessing: check for nulls and nonsensical values i.e. value or unixdatetime < 0
     #Fill na to fill any null/NA values; in this case we will choose value as 0 but could also choose mean/median etc.
