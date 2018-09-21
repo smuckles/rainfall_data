@@ -5,8 +5,6 @@ def main():
     import numpy as np
     import pandas as pd
     import datetime
-    import seaborn as sb
-    import matplotlib.pyplot as plt
     from scipy import interpolate
     from scipy import integrate
     
@@ -23,16 +21,7 @@ def main():
     df_raw.loc[~(df_raw['unixdatetime'] > 0), 'unixdatetime'] = np.nan
     #We will drop any unixdatetime values that are NA/null as we cannot infer what they should be
     df_raw.dropna(axis = 0, how = 'any', inplace = True)
-    
-    '''
-    #EDA: good to have a look and get an idea of how the data looks:
-    
-    df_raw['UTC_datetime'] = df_raw['unixdatetime'].apply(datetime.datetime.utcfromtimestamp)
-    plt.xlim(df_raw['UTC_datetime'].iloc[0], df_raw['UTC_datetime'].iloc[-1])
-    sb.scatterplot('UTC_datetime', 'value', data = df_raw)
-    plt.show()
-    
-    '''
+
     #First create an array of evenly spaced times: in this case we will use a resolution of minutes
     total_num_min = int( (df_raw['unixdatetime'].iloc[-1] - df_raw['unixdatetime'].iloc[0]) / 60 ) #total number of minutes between first obs and last
     time_array = np.linspace(df_raw['unixdatetime'].iloc[0], df_raw['unixdatetime'].iloc[-1], total_num_min) 
@@ -53,18 +42,11 @@ def main():
     
     #creating an output dataframe which we will will use as the output data
     df_processed = pd.DataFrame( {'TimeStamp' : time_array, 'Value' : rainfall} )
-    
-    '''
-    #more EDA: in this case, get a visual idea of how the interpolation function is behaving which I then used to inform my choices of epsilon and smooth
-    df_processed['UTCTime'] = df_processed['TimeStamp'].apply(datetime.datetime.utcfromtimestamp)
-    plt.xlim(df_processed['UTCTime'].iloc[0], df_processed['UTCTime'].iloc[-1])
-    sb.lineplot('UTCTime', 'Value', data = df_processed)
-    plt.show()
-    '''
-    
+
     #The below function determines the 30 minute period with the largest amount of rainfall
     #The method is simply to scan through the generated data range and integrate 30 minute periods
     #update the max_30_time and max_30_amt any time a new integral is greater than the current recorded one
+    
     def find_max_30():
         #this takes a while, performs a large number of integrals
         for time in range(0, total_num_min - 30):
@@ -79,13 +61,13 @@ def main():
                 else:
                     pass
                 
-        print(max_30_time)
-        print(max_30_amt)
+        df_max_30 = pd.DataFrame( {'Start Time' : max_30_time[0], 'Finish Time' : max_30_time[1], 'Total Rainfall' : max_30_amt} )
     
     find_max_30()
 
     #Output the new de-accumulated data to a csv file; this can easily be changed to output to a SQL table etc.
     df_processed.to_csv('de_accumRainfall.csv')
+    df_max_30.to_csv('max_30_rainfall.csv')
 
 if __name__ == "__main__":
     main()
